@@ -23,6 +23,12 @@
 **Architecture:** Real-time audio in Objective-C, Swift wrapper API
 **Risk mitigation:** Addresses audio thread rules (Pitfall #1), buffer scheduling (Pitfall #2)
 **Research:** Standard patterns — Apple Hello Metronome sample provides reference
+**Plans:** 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — MetronomeCore Swift Package (BPM type, TapTempo, tests)
+- [ ] 01-02-PLAN.md — Objective-C AudioEngine (sample-accurate scheduling)
+- [ ] 01-03-PLAN.md — Swift Wrapper + MetronomeEngine integration
 
 ### Phase 02: iOS App MVP
 **Goal:** Functional iOS app proving end-to-end architecture
@@ -73,7 +79,7 @@
 
 | Phase | Status | Plans | Completion |
 |-------|--------|-------|------------|
-| 01 | ○ Pending | 0/? | 0% |
+| 01 | ● Planning | 0/3 | 0% |
 | 02 | ○ Pending | 0/? | 0% |
 | 03 | ○ Pending | 0/? | 0% |
 | 04 | ○ Pending | 0/? | 0% |
