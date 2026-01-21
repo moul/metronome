@@ -26,9 +26,9 @@
 **Plans:** 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — MetronomeCore Swift Package (BPM type, TapTempo, tests)
-- [ ] 01-02-PLAN.md — Objective-C AudioEngine (sample-accurate scheduling)
-- [ ] 01-03-PLAN.md — Swift Wrapper + MetronomeEngine integration
+- [x] 01-01-PLAN.md — MetronomeCore Swift Package (BPM type, TapTempo, tests)
+- [x] 01-02-PLAN.md — Objective-C AudioEngine (sample-accurate scheduling)
+- [x] 01-03-PLAN.md — Swift Wrapper + MetronomeEngine integration (checkpoint PASSED)
 
 ### Phase 02: iOS App MVP
 **Goal:** Functional iOS app proving end-to-end architecture
@@ -79,7 +79,7 @@ Plans:
 
 | Phase | Status | Plans | Completion |
 |-------|--------|-------|------------|
-| 01 | ● Planning | 0/3 | 0% |
+| 01 | ✓ Complete | 3/3 | 100% |
 | 02 | ○ Pending | 0/? | 0% |
 | 03 | ○ Pending | 0/? | 0% |
 | 04 | ○ Pending | 0/? | 0% |
@@ -90,9 +90,9 @@ Plans:
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BPM control (30-300) | 01 | ○ Pending |
-| Basic tap tempo | 01 | ○ Pending |
-| Audio output with accent | 01 | ○ Pending |
+| BPM control (30-300) | 01 | ✓ Complete |
+| Basic tap tempo | 01 | ✓ Complete |
+| Audio output with accent | 01 | ✓ Complete |
 | Visual beat indicator | 02 | ○ Pending |
 | Background audio | 02 | ○ Pending |
 | Advanced tap tempo (statistical) | 03 | ○ Pending |
@@ -109,4 +109,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-21*
-*Last updated: 2026-01-21*
+*Last updated: 2026-01-21 — Phase 01 Complete*
