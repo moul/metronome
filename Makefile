@@ -6,7 +6,7 @@ DOCKER_IMAGE ?=	moul/metronome
 GOBINS ?=	.
 NPM_PACKAGES ?=	.
 
-.PHONY: all build test run clean help swift-build swift-test xcode setup
+.PHONY: all build test run clean help swift-build swift-test xcode setup generate
 
 ## Go CLI (legacy)
 
@@ -24,16 +24,18 @@ swift-test:
 
 ## iOS App
 
-run: xcode
+generate:
+	@which xcodegen > /dev/null || (echo "Installing xcodegen..." && brew install xcodegen)
+	xcodegen generate
 
-xcode:
-	@if [ -d "Metronome.xcodeproj" ]; then \
-		open Metronome.xcodeproj; \
-	else \
-		echo ""; \
-		echo "No Xcode project found. Run 'make setup' for instructions."; \
-		echo ""; \
+run:
+	@if [ ! -d "Metronome.xcodeproj" ]; then \
+		echo "Generating Xcode project..."; \
+		$(MAKE) generate; \
 	fi
+	open Metronome.xcodeproj
+
+xcode: run
 
 setup:
 	@echo ""
@@ -89,14 +91,15 @@ clean:
 help:
 	@echo "Metronome - Cross-platform timing app"
 	@echo ""
-	@echo "Setup:"
-	@echo "  setup        - Show Xcode project setup instructions"
+	@echo "iOS App:"
+	@echo "  run          - Generate project (if needed) and open Xcode"
+	@echo "  generate     - Generate Xcode project from project.yml"
+	@echo "  xcode        - Alias for run"
+	@echo "  setup        - Show manual setup instructions"
 	@echo ""
-	@echo "Swift targets:"
+	@echo "Swift Package:"
 	@echo "  swift-build  - Build MetronomeCore package"
 	@echo "  swift-test   - Run MetronomeCore unit tests"
-	@echo "  run          - Open Xcode to run iOS app (Cmd+R)"
-	@echo "  xcode        - Open project in Xcode"
 	@echo ""
 	@echo "General:"
 	@echo "  build        - Build all (alias for swift-build)"
