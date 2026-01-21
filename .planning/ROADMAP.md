@@ -38,6 +38,11 @@ Plans:
 **Depends on:** Phase 01 (Core Engine)
 **Risk mitigation:** Addresses audio session mismanagement (Pitfall #3)
 **Research:** Standard SwiftUI/MVVM patterns
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — App foundation + audio session (MetronomeApp, ViewModel, AudioSessionManager)
+- [ ] 02-02-PLAN.md — UI components + integration (BeatIndicator, BPMControl, checkpoint)
 
 ### Phase 03: Advanced Features
 **Goal:** Differentiating features that depend on audio timing engine
@@ -80,7 +85,7 @@ Plans:
 | Phase | Status | Plans | Completion |
 |-------|--------|-------|------------|
 | 01 | ✓ Complete | 3/3 | 100% |
-| 02 | ○ Pending | 0/? | 0% |
+| 02 | ○ Planned | 0/2 | 0% |
 | 03 | ○ Pending | 0/? | 0% |
 | 04 | ○ Pending | 0/? | 0% |
 | 05 | ○ Pending | 0/? | 0% |
@@ -109,4 +114,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-21*
-*Last updated: 2026-01-21 — Phase 01 Complete*
+*Last updated: 2026-01-21 — Phase 02 Planned*
