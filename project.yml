@@ -36,8 +36,6 @@ targets:
       - package: MetronomeCore
     entitlements:
       path: Metronome/Metronome.entitlements
-      properties:
-        com.apple.developer.coremedia.allow-alternate-audio: true
     preBuildScripts: []
     postBuildScripts: []
 
