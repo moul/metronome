@@ -40,7 +40,7 @@ final class TapTempoTests: XCTestCase {
         let bpm = tapTempo.recordTap()
 
         XCTAssertNotNil(bpm, "4 taps should return a BPM value")
-        XCTAssertEqual(bpm?.value, 120, accuracy: 1,
+        XCTAssertEqual(Double(bpm?.value ?? 0), 120.0, accuracy: 1.0,
                       "0.5 second intervals should yield ~120 BPM")
         XCTAssertTrue(tapTempo.isReady)
     }
@@ -141,7 +141,7 @@ final class TapTempoTests: XCTestCase {
 
         let bpm = tapTempo.recordTap()
         XCTAssertNotNil(bpm)
-        XCTAssertEqual(bpm?.value, 30, accuracy: 1,
+        XCTAssertEqual(Double(bpm?.value ?? 0), 30.0, accuracy: 1.0,
                       "2 second intervals should yield ~30 BPM")
     }
 
@@ -157,7 +157,7 @@ final class TapTempoTests: XCTestCase {
 
         let bpm = tapTempo.recordTap()
         XCTAssertNotNil(bpm)
-        XCTAssertEqual(bpm?.value, 300, accuracy: 1,
+        XCTAssertEqual(Double(bpm?.value ?? 0), 300.0, accuracy: 1.0,
                       "0.2 second intervals should yield ~300 BPM")
     }
 

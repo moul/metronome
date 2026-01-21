@@ -23,3 +23,18 @@ gin-bin
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Swift Package Manager
+.build/
+.swiftpm/
+MetronomeCore/.build/
+MetronomeCore/.swiftpm/
+
+# Xcode
+Metronome.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+
+# Build output
+*.output
