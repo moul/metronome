@@ -1,71 +1,37 @@
 import SwiftUI
 
-/// Main view displaying the metronome interface.
+/// Main view composing all metronome UI components.
 ///
-/// This is a placeholder view that validates the SwiftUI architecture.
-/// It will be replaced with polished components in Plan 02.
+/// Layout (top to bottom):
+/// - BeatIndicatorView: Visual beat feedback with pulse animation
+/// - BPMControlView: BPM display, slider, and +/- buttons
+/// - PlayPauseButton + TapTempoButton: Primary controls
 struct ContentView: View {
     @Environment(MetronomeViewModel.self) private var viewModel
 
     var body: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 40) {
             Spacer()
 
-            // BPM Display
-            VStack(spacing: 8) {
-                Text("\(viewModel.bpm)")
-                    .font(.system(size: 72, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-
-                Text("BPM")
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
-            }
-
-            // Beat indicator
-            HStack(spacing: 12) {
-                ForEach(0..<viewModel.beatsPerBar, id: \.self) { beat in
-                    Circle()
-                        .fill(beatColor(for: beat))
-                        .frame(width: 16, height: 16)
-                }
-            }
+            // Visual beat indicator (primary focus at top)
+            BeatIndicatorView()
 
             Spacer()
 
-            // Play/Stop Button
-            Button {
-                do {
-                    try viewModel.toggle()
-                } catch {
-                    // Handle error - in production, show alert
-                    print("Failed to toggle: \(error)")
-                }
-            } label: {
-                Image(systemName: viewModel.isPlaying ? "stop.fill" : "play.fill")
-                    .font(.system(size: 48))
-                    .foregroundStyle(.white)
-                    .frame(width: 100, height: 100)
-                    .background(viewModel.isPlaying ? Color.red : Color.blue)
-                    .clipShape(Circle())
+            // BPM controls
+            BPMControlView()
+
+            Spacer()
+
+            // Bottom controls: Play/Pause and Tap Tempo
+            HStack(spacing: 40) {
+                PlayPauseButton()
+                TapTempoButton()
             }
 
             Spacer()
         }
         .padding()
-    }
-
-    /// Returns the color for a beat indicator.
-    private func beatColor(for beat: Int) -> Color {
-        guard viewModel.isPlaying else {
-            return .gray.opacity(0.3)
-        }
-
-        if beat == viewModel.currentBeat {
-            return beat == 0 ? .red : .blue
-        } else {
-            return .gray.opacity(0.3)
-        }
     }
 }
 

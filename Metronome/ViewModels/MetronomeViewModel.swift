@@ -38,6 +38,11 @@ public final class MetronomeViewModel {
         set { engine.beatsPerBar = newValue }
     }
 
+    /// Current tap count for tap tempo
+    public var tapCount: Int {
+        engine.tapTempo.tapCount
+    }
+
     // MARK: - Private
 
     private let engine: MetronomeEngine
