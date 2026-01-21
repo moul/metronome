@@ -150,7 +150,72 @@
     _beatCallback = callback;
 }
 
-#pragma mark - Start/Stop (scheduling logic in Task 3)
+#pragma mark - Scheduling
+
+/// Schedule next beats using sample-accurate timing
+/// Called from timer on high-priority queue (NOT audio thread)
+/// CRITICAL: No locks, no allocation, no Swift/ObjC runtime calls
+- (void)scheduleNextBeats {
+    if (!_playing) {
+        return;
+    }
+
+    // Get current audio time from player node
+    // lastRenderTime is the master clock (more accurate than system time)
+    AVAudioTime *lastRenderTime = [_playerNode lastRenderTime];
+    if (!lastRenderTime || !lastRenderTime.isSampleTimeValid) {
+        // Engine hasn't started rendering yet, try again next timer fire
+        return;
+    }
+
+    // Calculate beat interval in samples
+    double sampleRate = _audioFormat.sampleRate;
+    double beatIntervalSeconds = 60.0 / (double)_bpm;
+    AVAudioFramePosition beatIntervalFrames = (AVAudioFramePosition)(beatIntervalSeconds * sampleRate);
+
+    // Initialize nextBeatFrame on first call
+    if (_nextBeatFrame == 0) {
+        // Start first beat slightly in the future to allow scheduling
+        _nextBeatFrame = lastRenderTime.sampleTime + (AVAudioFramePosition)(sampleRate * 0.1); // 100ms ahead
+    }
+
+    // Pre-schedule beats up to 3 beat intervals ahead
+    AVAudioFramePosition scheduleHorizon = lastRenderTime.sampleTime + (beatIntervalFrames * 3);
+
+    while (_nextBeatFrame < scheduleHorizon) {
+        // Determine if this is an accent beat (beat 1 of the bar)
+        BOOL isAccent = (_currentBeat % _beatsPerBar) == 0;
+
+        // Select buffer based on accent
+        AVAudioPCMBuffer *buffer = isAccent ? _accentBuffer : _clickBuffer;
+
+        // Create sample-accurate timing for this beat
+        AVAudioTime *beatTime = [AVAudioTime timeWithSampleTime:_nextBeatFrame
+                                                      atRate:sampleRate];
+
+        // Schedule buffer at precise sample time
+        // This is the critical call - scheduleBuffer:atTime: for sample accuracy
+        [_playerNode scheduleBuffer:buffer
+                             atTime:beatTime
+                            options:0
+                  completionHandler:nil];
+
+        // Dispatch callback to main thread (async, non-blocking)
+        if (_beatCallback) {
+            NSInteger beatNumber = _currentBeat;
+            BOOL accent = isAccent;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.beatCallback(beatNumber, accent);
+            });
+        }
+
+        // Advance to next beat
+        _currentBeat++;
+        _nextBeatFrame += beatIntervalFrames;
+    }
+}
+
+#pragma mark - Start/Stop
 
 - (BOOL)start:(NSError **)error {
     if (_playing) {
@@ -179,8 +244,43 @@
     _currentBeat = 0;
     _nextBeatFrame = 0;
 
-    // Scheduling logic will be added in Task 3
-    // For now, just mark as playing
+    // Create timer to drive scheduling
+    // Timer fires at 2x beat rate to maintain 2-3 beats ahead
+    double beatIntervalSeconds = 60.0 / (double)_bpm;
+    double timerInterval = beatIntervalSeconds / 2.0;
+
+    // Create dispatch source timer on high-priority queue
+    dispatch_queue_t schedulerQueue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
+    _schedulerTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, schedulerQueue);
+
+    if (!_schedulerTimer) {
+        [self stop];
+        if (error) {
+            *error = [NSError errorWithDomain:@"AudioEngineErrorDomain"
+                                         code:-3
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Failed to create scheduler timer"}];
+        }
+        return NO;
+    }
+
+    // Set timer to fire every timerInterval seconds
+    uint64_t interval = (uint64_t)(timerInterval * NSEC_PER_SEC);
+    dispatch_source_set_timer(_schedulerTimer,
+                             dispatch_time(DISPATCH_TIME_NOW, 0),
+                             interval,
+                             interval / 10); // 10% leeway for battery efficiency
+
+    // Set timer event handler
+    __weak AudioEngine *weakSelf = self;
+    dispatch_source_set_event_handler(_schedulerTimer, ^{
+        [weakSelf scheduleNextBeats];
+    });
+
+    // Start timer
+    dispatch_resume(_schedulerTimer);
+
+    // Schedule initial beats immediately
+    [self scheduleNextBeats];
 
     return YES;
 }
@@ -192,7 +292,11 @@
 
     _playing = NO;
 
-    // Scheduling cleanup will be added in Task 3
+    // Cancel and release scheduler timer
+    if (_schedulerTimer) {
+        dispatch_source_cancel(_schedulerTimer);
+        _schedulerTimer = nil;
+    }
 
     // Stop player node and engine
     [_playerNode stop];
